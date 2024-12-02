@@ -58,12 +58,12 @@ class MainActivity : ComponentActivity() {
                     BottomItem(
                         title = "Word Add",
                         icon = Icons.Default.Add,
-                        route = "AddScreen"
+                        route = "WordAddScreen"
                     ),
                     BottomItem(
                         title = "My Words",
                         icon = Icons.Default.Star,
-                        route = "StarScreen"
+                        route = "MyWordsScreen"
                     ),
                 )
 
