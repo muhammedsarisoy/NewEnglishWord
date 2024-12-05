@@ -40,6 +40,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.myenglishwordworld.R
 import com.example.myenglishwordworld.ui.navigation.NavigationGraph
 import com.example.myenglishwordworld.data.BottomItem
+import com.example.myenglishwordworld.ui.wordadd.WordAddScreen
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -96,6 +97,7 @@ class MainActivity : ComponentActivity() {
                         startDestination = "HomeScreen",
                         modifier = Modifier.padding(innerPadding)
                     )
+
                 }
             }
         }

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ElevatedCard
@@ -20,6 +21,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,22 +38,41 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.myenglishwordworld.R
+import com.example.myenglishwordworld.data.Words
+import com.example.myenglishwordworld.data.WordsDao
+import com.example.myenglishwordworld.data.WordsDataBase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import java.util.concurrent.Executor
 
 
 @Composable
 fun WordAddScreen(
-    navController: NavHostController
+    navController: NavHostController,
+    viewModel: WordAddViewModel
 
 ){
 
-    var text by remember { mutableStateOf(TextFieldValue("")) }
+    val textFieldValueSaver = Saver<TextFieldValue, String>(
+        save = { it.text },
+        restore = { TextFieldValue(it) }
+    )
+
+    var english_word by rememberSaveable(stateSaver = textFieldValueSaver) { mutableStateOf(TextFieldValue("")) }
+    var other_word by rememberSaveable(stateSaver = textFieldValueSaver) { mutableStateOf(TextFieldValue("")) }
+    val context = LocalContext.current
+    val wordsDao = WordsDataBase.getInstance(context, Executor {  })!!.wordsDao
+    val wordAddRepository = WordAddRepository(wordsDao)
+    val wordAddViewModel = WordAddViewModel(wordAddRepository)
+
 
     val firaSansFamily = FontFamily(
-        Font(
-            R.font.font_type ,
-            FontWeight.Normal
+            Font(
+                R.font.font_type ,
+                FontWeight.Normal
+            )
         )
-    )
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -83,13 +105,14 @@ fun WordAddScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
+
                 OutlinedTextField(
-                    value = text,
+                    value = english_word,
                     label = { Text(text = "Enter Word") },
                     placeholder = { Text(text = "Please Enter Word") },
                     modifier = Modifier.padding(16.dp),
                     onValueChange = {
-                        text = it
+                        english_word = it
                     }
                 )
 
@@ -98,12 +121,12 @@ fun WordAddScreen(
                 )
 
                 OutlinedTextField(
-                    value = text,
+                    value = other_word,
                     label = { Text(text = "Enter Other Word") },
                     placeholder = { Text(text = "Please Other Word") },
                     modifier = Modifier.padding(16.dp),
                     onValueChange = {
-                        text = it
+                        other_word = it
                     }
                 )
                 Spacer(
@@ -112,6 +135,12 @@ fun WordAddScreen(
 
                 ElevatedButton(
                     onClick = {
+                        if (english_word.text.isNotEmpty() && other_word.text.isNotEmpty()) {
+                            viewModel.addWord(Words(0, english_word.text, other_word.text), english_word.text, other_word.text)
+                            Toast.makeText(context, "Word Added", Toast.LENGTH_SHORT).show()
+                        } else {
+                            Toast.makeText(context, "Fields cannot be empty", Toast.LENGTH_SHORT).show()
+                        }
                     },
                     modifier = Modifier.size(width = 250.dp, height = 50.dp)
                         .clip(RoundedCornerShape(8.dp)),
@@ -119,7 +148,7 @@ fun WordAddScreen(
                         width = 1.dp,
                         color = Color.White
                     ),
-                    colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = Color(0xFF011B57))
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF011B57))
                 )
                 {
                     Text(text = "Add Word" , color = Color.White  , fontSize = 16.sp , fontWeight = FontWeight.Bold, fontFamily = firaSansFamily)
@@ -129,10 +158,4 @@ fun WordAddScreen(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun WordAddScreenPreview(){
-    WordAddScreen(
-        navController = NavHostController(LocalContext.current)
-    )
-}
+

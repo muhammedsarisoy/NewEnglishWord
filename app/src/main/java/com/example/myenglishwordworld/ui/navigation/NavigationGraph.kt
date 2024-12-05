@@ -7,9 +7,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.myenglishwordworld.ui.home.HomeScreen
 import com.example.myenglishwordworld.data.BottomItem
+import com.example.myenglishwordworld.data.WordsDataBase
 import com.example.myenglishwordworld.ui.game.GameScreen
 import com.example.myenglishwordworld.ui.mywordscreen.MyWordsScreen
+import com.example.myenglishwordworld.ui.wordadd.WordAddRepository
 import com.example.myenglishwordworld.ui.wordadd.WordAddScreen
+import com.example.myenglishwordworld.ui.wordadd.WordAddViewModel
+import java.util.concurrent.Executor
+
 
 
 @Composable
@@ -18,6 +23,9 @@ fun NavigationGraph(
     startDestination: String,
     modifier: Modifier
 ){
+
+    val context = androidx.compose.ui.platform.LocalContext.current
+
     NavHost(
         navController = navController,
         startDestination = startDestination,
@@ -27,7 +35,9 @@ fun NavigationGraph(
             HomeScreen(navController = navController)
         }
         composable(route = "WordAddScreen"){
-            WordAddScreen(navController = navController)
+            WordAddScreen(navController = navController , viewModel = WordAddViewModel(
+                WordAddRepository(WordsDataBase.getInstance(context, Executor {  })!!.wordsDao)
+            ))
         }
         composable(route = "GameScreen") {
             GameScreen(navController = navController)
