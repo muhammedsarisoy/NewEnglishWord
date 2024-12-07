@@ -21,6 +21,7 @@ navigation = "2.8.4"
 storage = "1.5.0"
 uiVersion = "1.7.5"
 firebaseFirestoreKtx = "25.1.1"
+mediarouter = "1.7.0"
 
 [libraries]
 androidx-compose-material3-material3 = { module = "androidx.compose.material3:material3" }
@@ -58,6 +59,7 @@ coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coi
 storage = { group = "androidx.test.services", name = "storage", version.ref = "storage" }
 ui = { module = "androidx.compose.ui:ui", version.ref = "uiVersion" }
 firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx", version.ref = "firebaseFirestoreKtx" }
+androidx-mediarouter = { group = "androidx.mediarouter", name = "mediarouter", version.ref = "mediarouter" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

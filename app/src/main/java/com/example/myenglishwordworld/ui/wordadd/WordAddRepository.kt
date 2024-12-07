@@ -1,35 +1,41 @@
 package com.example.myenglishwordworld.ui.wordadd
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.mediarouter.media.RouteListingPreference
 import com.example.myenglishwordworld.data.Words
 import com.example.myenglishwordworld.data.WordsDao
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 
-class WordAddRepository(
-    private val wordsDao: WordsDao
+class WordAddRepository(private val wordsDao: WordsDao) {
 
-) {
-
-    suspend fun addWordToRoom(word: Words) {
-        wordsDao.insertWord(word)
+    suspend fun insertItem(words: Words) {
+        wordsDao.insert(words)
     }
 
-    suspend fun getAllWordsFromRoom(): List<Words> {
-        return wordsDao.getAll()
+    suspend fun saveItem(item: Words) {
+        wordsDao.insert(item)
     }
 
-    suspend fun getWordByIdFromRoom(wordId: Int): Words? {
-        return wordsDao.getWordById(wordId)
+    suspend fun getAllItems(): List<Words> {
+        return wordsDao.getAllItems()
     }
 
-    suspend fun getWordByEnglishWordFromRoom(englishWord: String): Words? {
-        return wordsDao.getWordByEnglishWord(englishWord)
+    suspend fun deleteItemById(id: Int) {
+        wordsDao.deleteItemById(id)
     }
 
-    suspend fun getWordByOtherWordFromRoom(otherWord: String): Words? {
-        return wordsDao.getWordByOtherWord(otherWord)
+    fun observeAllItems(): Flow<List<Words>> {
+        return wordsDao.observeAllItems()
     }
 
-    suspend fun deleteWordByIdFromRoom(wordId: Int) {
-        wordsDao.deleteWordById(wordId)
+    fun getAllItemsLiveData(): LiveData<List<Words>> {
+        return wordsDao.observeAllItems().asLiveData()
     }
 
+    suspend fun getRandomaItem(): Words {
+        return wordsDao.getRandomaItem()
+    }
 }

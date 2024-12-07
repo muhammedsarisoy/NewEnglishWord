@@ -1,5 +1,6 @@
 package com.example.myenglishwordworld.ui.wordadd
 
+import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
@@ -36,6 +37,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.myenglishwordworld.R
 import com.example.myenglishwordworld.data.Words
@@ -50,8 +52,7 @@ import java.util.concurrent.Executor
 @Composable
 fun WordAddScreen(
     navController: NavHostController,
-    viewModel: WordAddViewModel
-
+    context: Context
 ){
 
     val textFieldValueSaver = Saver<TextFieldValue, String>(
@@ -59,12 +60,12 @@ fun WordAddScreen(
         restore = { TextFieldValue(it) }
     )
 
-    var english_word by rememberSaveable(stateSaver = textFieldValueSaver) { mutableStateOf(TextFieldValue("")) }
-    var other_word by rememberSaveable(stateSaver = textFieldValueSaver) { mutableStateOf(TextFieldValue("")) }
-    val context = LocalContext.current
-    val wordsDao = WordsDataBase.getInstance(context, Executor {  })!!.wordsDao
-    val wordAddRepository = WordAddRepository(wordsDao)
-    val wordAddViewModel = WordAddViewModel(wordAddRepository)
+
+    var text1 by rememberSaveable(stateSaver = textFieldValueSaver) { mutableStateOf(TextFieldValue("")) }
+    var text2 by rememberSaveable(stateSaver = textFieldValueSaver) { mutableStateOf(TextFieldValue("")) }
+    val database = WordsDataBase.getDatabase(context)
+    val repository = WordAddRepository(database.wordDao())
+    val viewModel: WordAddViewModel = viewModel(factory = WordAddViewModelFactory(repository))
 
 
     val firaSansFamily = FontFamily(
@@ -107,13 +108,18 @@ fun WordAddScreen(
             ) {
 
                 OutlinedTextField(
-                    value = english_word,
+                    value = text1,
                     label = { Text(text = "Enter Word") },
                     placeholder = { Text(text = "Please Enter Word") },
                     modifier = Modifier.padding(16.dp),
                     onValueChange = {
-                        english_word = it
+                        text1 = it
                     }
+                    ,
+                    maxLines = 1,
+                    textStyle = androidx.compose.ui.text.TextStyle(
+                        color = Color.White
+                    )
                 )
 
                 Spacer(
@@ -121,13 +127,17 @@ fun WordAddScreen(
                 )
 
                 OutlinedTextField(
-                    value = other_word,
+                    value = text2,
                     label = { Text(text = "Enter Other Word") },
                     placeholder = { Text(text = "Please Other Word") },
                     modifier = Modifier.padding(16.dp),
                     onValueChange = {
-                        other_word = it
-                    }
+                        text2 = it
+                    },
+                    maxLines = 1,
+                    textStyle = androidx.compose.ui.text.TextStyle(
+                        color = Color.White
+                    )
                 )
                 Spacer(
                     modifier = Modifier.padding(6.dp)
@@ -135,12 +145,15 @@ fun WordAddScreen(
 
                 ElevatedButton(
                     onClick = {
-                        if (english_word.text.isNotEmpty() && other_word.text.isNotEmpty()) {
-                            viewModel.addWord(Words(0, english_word.text, other_word.text), english_word.text, other_word.text)
-                            Toast.makeText(context, "Word Added", Toast.LENGTH_SHORT).show()
-                        } else {
-                            Toast.makeText(context, "Fields cannot be empty", Toast.LENGTH_SHORT).show()
-                        }
+                        val item = Words(
+                            wordId = 0,
+                            text1 = text1.text,
+                            text2 = text2.text
+                        )
+                        viewModel.saveItem(item)
+                        text1 = TextFieldValue("")
+                        text2 = TextFieldValue("")
+                        Toast.makeText(context, "Word Added", Toast.LENGTH_SHORT).show()
                     },
                     modifier = Modifier.size(width = 250.dp, height = 50.dp)
                         .clip(RoundedCornerShape(8.dp)),

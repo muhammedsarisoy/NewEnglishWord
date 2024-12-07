@@ -4,27 +4,26 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import java.util.concurrent.Executor
 
 
-@Database(entities = [Words::class], version = 1)
-abstract class WordsDataBase: RoomDatabase() {
-    abstract val wordsDao: WordsDao
+@Database(entities = [Words::class], version = 1, exportSchema = false)
+abstract class  WordsDataBase : RoomDatabase() {
+    abstract fun wordDao(): WordsDao
 
-    companion object {
-        var INSTANCE: WordsDataBase? = null
+    companion object{
+        @Volatile
+        private var Instance: WordsDataBase? = null
 
-        fun getInstance(context: Context, executor: Executor): WordsDataBase? {
-            if (INSTANCE == null) {
-                synchronized(WordsDataBase::class.java) {
-                    INSTANCE = Room.databaseBuilder(
-                        context.applicationContext,
-                        WordsDataBase::class.java,
-                        "database.db"
-                    ).createFromAsset("database.db").build()
-                }
+        fun getDatabase(context: Context): WordsDataBase {
+            return Instance ?: synchronized(this){
+                Room.databaseBuilder(context, WordsDataBase::class.java, "item_database")
+                    .fallbackToDestructiveMigration()
+                    .build()
+                    .also { Instance = it }
             }
-            return INSTANCE
         }
     }
 }

@@ -55,6 +55,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.storage)
     implementation(libs.firebase.firestore.ktx)
+    implementation(libs.androidx.mediarouter)
     testImplementation(libs.junit)
     androidTestImplementation(libs.junit.ext)
     androidTestImplementation(libs.espresso.core)

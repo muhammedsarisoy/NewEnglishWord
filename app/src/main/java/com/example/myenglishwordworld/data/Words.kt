@@ -5,10 +5,9 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import org.jetbrains.annotations.NotNull
 
-@Entity(tableName = "wordsTable")
+@Entity(tableName = "Item")
 data class Words(
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "word_id") val wordId: Int,
-    @ColumnInfo(name = "english_word") val englishWord: String,
-    @ColumnInfo(name = "other_word") val otherWord: String
+    @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "WordId") val wordId: Int,
+    @ColumnInfo(name = "text1") val text1: String,
+    @ColumnInfo(name = "text2") val text2: String
 )

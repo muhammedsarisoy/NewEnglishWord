@@ -35,15 +35,13 @@ fun NavigationGraph(
             HomeScreen(navController = navController)
         }
         composable(route = "WordAddScreen"){
-            WordAddScreen(navController = navController , viewModel = WordAddViewModel(
-                WordAddRepository(WordsDataBase.getInstance(context, Executor {  })!!.wordsDao)
-            ))
+            WordAddScreen(navController = navController , context = context)
         }
         composable(route = "GameScreen") {
-            GameScreen(navController = navController)
+            GameScreen(navController = navController , context = context)
         }
         composable(route = "MyWordsScreen"){
-            MyWordsScreen(navController = navController)
+            MyWordsScreen(navController = navController , context = context)
         }
     }
 }

@@ -1,41 +1,39 @@
 package com.example.myenglishwordworld.ui.wordadd
 
+import android.media.RouteListingPreference
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.myenglishwordworld.data.Words
 import kotlinx.coroutines.launch
 
-class WordAddViewModel(
-    private val repository: WordAddRepository
+class WordAddViewModel(private val repository: WordAddRepository) : ViewModel() {
 
-): ViewModel()
-{
-    fun addWord(word: Words , englishWord: String, otherWord: String) {
+    fun saveItem(words: Words) {
         viewModelScope.launch {
-            repository.addWordToRoom(word)
+            repository.saveItem(words)
         }
     }
 
-    suspend fun getAllWordsFromRoom(): List<Words> {
-        return repository.getAllWordsFromRoom()
+    fun deleteItemById(id: Int) {
+        viewModelScope.launch {
+            repository.deleteItemById(id)
+        }
     }
 
-    suspend fun getWordByIdFromRoom(wordId: Int): Words? {
-        return repository.getWordByIdFromRoom(wordId)
+    private fun fetchWords() {
+        viewModelScope.launch {
+            val words = repository.getAllItems()
+        }
     }
 
-    suspend fun getWordByEnglishWordFromRoom(englishWord: String): Words? {
-        return repository.getWordByEnglishWordFromRoom(englishWord)
+    fun getAllItemsLiveData(): LiveData<List<Words>> {
+        return repository.getAllItemsLiveData()
     }
 
-    suspend fun getWordByOtherWordFromRoom(otherWord: String): Words? {
-        return repository.getWordByOtherWordFromRoom(otherWord)
+    suspend fun getRandomaItem(): Words {
+        return repository.getRandomaItem()
     }
-
-    suspend fun deleteWordByIdFromRoom(wordId: Int) {
-        repository.deleteWordByIdFromRoom(wordId)
-    }
-
-
-
 }
+
